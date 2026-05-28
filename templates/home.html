@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <section class="todo-panel" aria-label="Todo List Panel">
+    
+    <h1 class="todo-title">To Do List</h1>
+
+    <form class="todo-entry" action="#" method="post">
+      <input
+        type="text"
+        class="form-control todo-input"
+        placeholder=""
+        aria-label="Add new todo"
+      />
+      <button type="submit" class="btn todo-add-btn">Add</button>
+    </form>
+
+    <h2 class="task-heading">Task List</h2>
+
+    <div class="task-list">
+      {% if todos %}
+        {% for item in todos %}
+          <article class="task-row">
+            <label class="task-main" for="todo-{{ item.id }}">
+              <input
+                id="todo-{{ item.id }}"
+                class="form-check-input task-check"
+                type="checkbox"
+                {% if item.urgency_level == "low" %}checked{% endif %}
+              />
+              <span class="task-text" {% if item.urgency_level == "low" %}is-done{% endif %}>
+                <a class="task-text" href={{ url_for("todo_page", todo_id= item.id) }}>{{ item.title }}</a>
+              </span>
+            </label>
+
+            <div class="task-actions">
+              <a href="#" class="task-action delete">Delete</a>
+              <a href="#" class="task-action edit">Edit</a>
+            </div>
+          </article>
+        {% endfor %}
+      {% else %}
+        <article class="task-row">
+          <span class="task-text">No tasks yet</span>
+        </article>
+      {% endif %}
+    </div>
+
+    {% set completed = todos | selectattr("urgency_level", "equalto", "low") | list | length %}
+    {% set uncompleted = (todos | length) - completed %}
+
+    <footer class="task-summary">
+      Completed: {{ completed }} | Uncompleted: {{ uncompleted }}
+    </footer>
+
+  </section>
+{% endblock content %}

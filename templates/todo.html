@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-10 col-lg-8">
+        <article class="card shadow-sm border-0">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <h1 class="h3 mb-0">{{ todo.title if todo else "Todo Detail" }}</h1>
+              {% if todo %}
+                <span class="badge rounded-pill text-bg-primary">
+                  {{ todo.urgency_level|capitalize }}
+                </span>
+              {% endif %}
+            </div>
+
+            <p class="text-secondary mb-4">Todo ID: {{ todo.id if todo else "-" }}</p>
+
+            <section>
+              <h2 class="h5 mb-2">Description</h2>
+              <div class="p-3 bg-light rounded border">
+                <p class="mb-0">
+                  {{ todo.description if todo else "No description available." }}
+                </p>
+              </div>
+            </section>
+
+            <div class="mt-4">
+              <a href="/" class="btn btn-outline-primary">Back to Home</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

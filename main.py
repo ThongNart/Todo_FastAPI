@@ -235,11 +235,41 @@ def update_todo_partial(
     
     update_data = todo_data.model_dump(exclude_unset=True) # Set this so Pydantic won't set all field to default which is None
 
+    if "title" in update_data:
+        todo.title = update_data["title"]
+    if "detail" in update_data:
+        todo.description = update_data["detail"]
+    if "urgency_level" in update_data:
+        todo.urgency_level = update_data["urgency_level"]
 
 
     db.commit()
     db.refresh(todo)
     return todo
+
+
+# API DELETE
+
+@app.delete("/api/todo/{todo_id}", 
+          status_code=204
+          )
+def delete_todo(
+    todo_id: int,
+    db: Annotated[Session, Depends(get_db)]
+):
+
+    result = db.execute(
+        select(models.TodoItem).where(models.TodoItem.id == todo_id)
+        )
+    
+    todo = result.scalars().first()
+
+    if not todo:
+            raise HTTPException(status_code=404, detail="TODO NOT FOUND")
+ 
+    db.delete(todo)
+    db.commit()
+
 
 
 
@@ -252,9 +282,9 @@ def update_todo_partial(
 def create_todo(todo: TodoCreate, db: Annotated[Session, Depends(get_db)]):
 
     result = db.execute(select(models.TodoItem).where(models.TodoItem.title == todo.title))
-    existing_post = result.scalars().first()
+    existing_todo = result.scalars().first()
 
-    if existing_post:
+    if existing_todo:
         raise HTTPException(
             status_code= 400,
             details = "Todo title already exists"

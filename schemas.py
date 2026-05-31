@@ -6,7 +6,7 @@ from typing import Literal
 
 class TodoBase(BaseModel):
     title: str  = Field(default = None, min_length=1, max_length=100)
-    detail: str = Field(default = None, min_length=1, max_length=100)
+    description: str = Field(default = None, min_length=1, max_length=100)
     urgency_level: Literal["low", "medium", "high"] = Field(default = None)
 
     
@@ -17,7 +17,7 @@ class TodoCreate(TodoBase):
 
 class TodoUpdate(BaseModel):
     title: str | None = Field(default = None, min_length=1, max_length=100)
-    detail: str | None = Field (default = None, min_length = 1)
+    description: str | None = Field (default = None, min_length = 1)
     urgency_level: Literal["low", "medium", "high"] | None = Field(default= None)
 
 

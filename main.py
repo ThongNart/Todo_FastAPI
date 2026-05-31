@@ -74,7 +74,7 @@ todo_items: list[Dict] = [
 def home_page(request: Request, db: Annotated[Session, Depends(get_db)]):
 
     result = db.execute(
-        select(models.TodoItem)
+        select(models.TodoItem).order_by(models.TodoItem.created_at.desc())
     )
     todo_list = result.scalars().all()
     
@@ -144,7 +144,7 @@ def todo_page(request: Request, todo_id: int, db: Annotated[Session, Depends(get
 @app.get("/todos",response_model = list[TodoResponse], status_code = 200)
 def get_todos(db:Annotated[Session,Depends(get_db)]):
     result = db.execute(
-        select(models.TodoItem)
+        select(models.TodoItem).order_by(models.TodoItem.created_at.desc())
     )
 
     todo_list = result.scalars().all()
@@ -202,7 +202,7 @@ def update_todo_full(
     
     
     todo.title = todo_data.title
-    todo.description = todo_data.detail
+    todo.description = todo_data.description
     todo.urgency_level = todo_data.urgency_level
 
     db.commit()
@@ -237,8 +237,8 @@ def update_todo_partial(
 
     if "title" in update_data:
         todo.title = update_data["title"]
-    if "detail" in update_data:
-        todo.description = update_data["detail"]
+    if "description" in update_data:
+        todo.description = update_data["description"]
     if "urgency_level" in update_data:
         todo.urgency_level = update_data["urgency_level"]
 
@@ -287,21 +287,21 @@ def create_todo(todo: TodoCreate, db: Annotated[Session, Depends(get_db)]):
     if existing_todo:
         raise HTTPException(
             status_code= 400,
-            details = "Todo title already exists"
+            detail = "Todo title already exists"
         )
     
-    result = db.execute(select(models.TodoItem).where(models.TodoItem.description == todo.detail))
+    result = db.execute(select(models.TodoItem).where(models.TodoItem.description == todo.description))
     existing_description = result.scalars().first()
 
     if existing_description:
         raise HTTPException(
             status_code= 400,
-            details = "Todo description already exists"
+            detail = "Todo description already exists"
         )
 
     new_todo = models.TodoItem (
        title = todo.title,
-       description = todo.detail,
+       description = todo.description,
        urgency_level = todo.urgency_level
 
    ) 
